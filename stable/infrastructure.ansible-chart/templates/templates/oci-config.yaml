@@ -1,0 +1,10 @@
+{{- if .Values.cronJob.oci }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Values.cronJob.name }}-oci-config"
+data:
+  config: |
+{{ tpl (.Values.cronJob.oci.config ) $ | indent 4 }}
+---
+{{- end }}

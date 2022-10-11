@@ -1,0 +1,73 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: "{{ .Values.cronJob.name }}-ansible-cronjob"
+spec:
+  schedule: "{{ .Values.cronJob.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: "ansible-{{ .Values.cronJob.name }}"
+            image: "{{ .Values.cronJob.spec.image }}"
+            imagePullPolicy: Always
+            command:
+            - /bin/sh
+            - -c
+            - >-
+              echo starting
+              ; eval $(ssh-agent)
+              {{- range .Values.sshKeys }}
+              ; echo loadging ssh-key /root/.ssh-keys/{{ .secretName }}/{{ .secretKey }}
+              ; ssh-add /root/.ssh-keys/{{ .secretName }}/{{ .secretKey }}
+              {{- end }}
+              {{- range $key, $val := .Values.inventories }}
+              ; echo executing ansible with inventory: /root/inventories/{{ $key }}
+              ; ansible all -m ping -i /root/inventories/{{ $key }}
+              {{- end }}
+              ; echo finished
+            volumeMounts:
+            {{- range .Values.sshKeys }}
+            - name: ssh-key-{{ .secretName }}-{{ .secretKey }}
+              mountPath: "/root/.ssh-keys/{{ .secretName }}"
+              readOnly: true
+            {{- end }}
+            - name: inventories
+              mountPath: "/root/inventories/"
+              readOnly: true
+            {{- if .Values.cronJob.oci }}
+            - name: oci-config
+              mountPath: "/root/.oci"
+              readOnly: true
+            - name: oci-key
+              mountPath: "/root/.oci-key"
+              readOnly: true
+            {{- end }}
+          volumes:
+          {{- range .Values.sshKeys }}
+          - name: ssh-key-{{ .secretName }}-{{ .secretKey }}
+            secret:
+              secretName: {{ .secretName }}
+              defaultMode: 0400
+              items:
+              - key: {{ .secretKey }}
+                path: "{{ .secretKey }}"
+          {{- end }}
+          - name: inventories
+            configMap:
+              name: "{{ .Values.cronJob.name }}-inventories"
+          {{- if .Values.cronJob.oci }}
+          - name: oci-config
+            configMap:
+              name: "{{ .Values.cronJob.name }}-oci-config"
+          - name: oci-key
+            secret:
+              secretName: {{ .Values.cronJob.oci.key.secretName }}
+              defaultMode: 0400
+              items:
+              - key: {{ .Values.cronJob.oci.key.secretKey }}
+                path: 'oci_api_key.pem'
+          {{- end }}
+
+          restartPolicy: OnFailure
