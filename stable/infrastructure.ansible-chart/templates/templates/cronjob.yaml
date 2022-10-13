@@ -22,11 +22,17 @@ spec:
               ; echo loadging ssh-key /root/.ssh-keys/{{ .secretName }}/{{ .secretKey }}
               ; ssh-add /root/.ssh-keys/{{ .secretName }}/{{ .secretKey }}
               {{- end }}
-              {{- range $key, $val := .Values.inventories }}
-              ; echo executing ansible with inventory: /root/inventories/{{ $key }}
-              ; ansible all -m ping -i /root/inventories/{{ $key }}
+              {{- range $inventoryKey, $inventoryVal := .Values.inventories }}
+              {{- range $playbookKey, $playbooksVal := $.Values.playbooks }}
+              ; echo executing ansible with inventory: /root/inventories/{{ $inventoryKey }} and playbooks: /root/playbooks/{{ $playbookKey }}
+              ; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i /root/inventories/{{ $inventoryKey }} /root/playbooks/{{ $playbookKey }}
+              {{- end }}
               {{- end }}
               ; echo finished
+            {{- if .Values.cronJob.env }}
+            env:
+{{ tpl (.Values.cronJob.env | toYaml) $ | indent 12 }}
+            {{- end }}
             volumeMounts:
             {{- range .Values.sshKeys }}
             - name: ssh-key-{{ .secretName }}-{{ .secretKey }}
@@ -35,6 +41,9 @@ spec:
             {{- end }}
             - name: inventories
               mountPath: "/root/inventories/"
+              readOnly: true
+            - name: playbooks
+              mountPath: "/root/playbooks/"
               readOnly: true
             {{- if .Values.cronJob.oci }}
             - name: oci-config
@@ -57,6 +66,9 @@ spec:
           - name: inventories
             configMap:
               name: "{{ .Values.cronJob.name }}-inventories"
+          - name: playbooks
+            configMap:
+              name: "{{ .Values.cronJob.name }}-playbooks"
           {{- if .Values.cronJob.oci }}
           - name: oci-config
             configMap:

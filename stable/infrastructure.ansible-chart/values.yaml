@@ -2,7 +2,7 @@ namespace:
   name: ansible
 cronJob:
   name: tg-infrastructure
-  schedule: "* * * * *"
+  schedule: "0 * * * *"
   spec:
     image: tarabutgateway/infrastructure.ansible:develop
   oci:
@@ -11,16 +11,10 @@ cronJob:
       secretKey: api-key
     config: |
       [DEFAULT]
-      user=ocid1.user.oc1..aaaaaaaaihlalekov7mgkbyyy32o67qmyo4czi6ftpsfqfac57rhurzkcoaa
-      fingerprint=67:1c:f7:31:95:68:2f:34:7a:b6:0a:13:6a:0a:af:04
-      tenancy=ocid1.tenancy.oc1..aaaaaaaawhsxkyrhwu7tnfd3ixwux443jwujvlehyqstzqfa6vzxzh4oclua
-      region=me-jeddah-1
       key_file=/root/.oci-key/oci_api_key.pem
+  env: []
 sshKeys:
-  - secretName: ansible-ssh-keys
-    secretKey: oci-sandbox
-inventories:
-  oracle.oci.yaml: |
-    plugin: oracle.oci.oci
-    config_file: /root/.oci/config
-    config_profile: DEFAULT
+  - secretName: ssh-key-secret
+    secretKey: private-key
+inventories: []
+playbooks: {}
