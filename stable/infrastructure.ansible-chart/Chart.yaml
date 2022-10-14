@@ -1,4 +1,4 @@
 apiVersion: v1
 name: infrastructure.ansible-chart
 description: Ansible chart for CronJob execution
-version: 0.0.1
+version: 0.0.2
