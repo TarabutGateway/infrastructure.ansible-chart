@@ -16,3 +16,4 @@ sshKeys:
     secretKey: private-key
 inventories: []
 playbooks: {}
+ansibleGalaxyCollections: []

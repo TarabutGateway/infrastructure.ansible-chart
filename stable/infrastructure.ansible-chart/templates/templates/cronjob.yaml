@@ -25,6 +25,9 @@ spec:
               ; echo loadging ssh-key /root/.ssh-keys/{{ .secretName }}/{{ .secretKey }}
               ; ssh-add /root/.ssh-keys/{{ .secretName }}/{{ .secretKey }}
               {{- end }}
+              {{- range .Values.ansibleGalaxyCollections }}
+              ; ansible-galaxy install {{ . }}
+              {{- end }}
               {{- range $inventoryKey, $inventoryVal := .Values.inventories }}
               {{- range $playbookKey, $playbooksVal := $.Values.playbooks }}
               ; echo executing ansible with inventory: /root/inventories/{{ $inventoryKey }} and playbooks: /root/playbooks/{{ $playbookKey }}
