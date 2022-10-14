@@ -2,6 +2,14 @@ apiVersion: v1
 entries:
   infrastructure.ansible-chart:
   - apiVersion: v1
+    created: "2022-10-14T08:50:27.023835244Z"
+    description: Ansible chart for CronJob execution
+    digest: 946288c30a247aa988f13c05b294eaee8d3b99375863f333e1e196c7f6d07adb
+    name: infrastructure.ansible-chart
+    urls:
+    - https://github.com/TarabutGateway/infrastructure.ansible-chart/releases/download/infrastructure.ansible-chart-0.0.3/infrastructure.ansible-chart-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v1
     created: "2022-10-14T07:48:51.341776893Z"
     description: Ansible chart for CronJob execution
     digest: c5514dc4869612b461c8601b548dc9ccf4e787c6dd9608739d1ab6173de5e1c8
@@ -9,4 +17,4 @@ entries:
     urls:
     - https://github.com/TarabutGateway/infrastructure.ansible-chart/releases/download/infrastructure.ansible-chart-0.0.2/infrastructure.ansible-chart-0.0.2.tgz
     version: 0.0.2
-generated: "2022-10-14T07:48:51.341782993Z"
+generated: "2022-10-14T08:50:27.023855244Z"
